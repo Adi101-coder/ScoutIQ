@@ -3,3 +3,11 @@ dist/
 .env
 *.env.local
 prisma/migrations/
+
+# Next.js build output
+.next/
+frontend/.next/
+
+# OS / editor
+.DS_Store
+Thumbs.db
