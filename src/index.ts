@@ -25,9 +25,21 @@ app.use(
   })
 )
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:3000',
+].filter(Boolean).map((o) => o!.replace(/\/$/, ''))
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      // allow non-browser requests (curl, Postman, server-to-server)
+      if (!origin) return callback(null, true)
+      if (allowedOrigins.includes(origin.replace(/\/$/, ''))) {
+        return callback(null, true)
+      }
+      return callback(new Error(`CORS: origin ${origin} not allowed`))
+    },
     credentials: true,
   })
 )
