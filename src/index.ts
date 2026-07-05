@@ -27,7 +27,6 @@ app.use(
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  'http://localhost:3000',
 ].filter(Boolean).map((o) => o!.replace(/\/$/, ''))
 
 app.use(
