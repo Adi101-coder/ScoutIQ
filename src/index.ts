@@ -13,6 +13,7 @@ import uploadRoutes from './routes/uploads'
 import businessRoutes from './routes/businesses'
 import dashboardRoutes from './routes/dashboard'
 import siteRoutes from './routes/sites'
+import adminRoutes from './routes/admin'
 import { errorHandler } from './middleware/errorHandler'
 import { startExpiryCleanup } from './jobs/expiryCleanup'
 import { startReminderJob } from './jobs/reminderEmails'
@@ -52,6 +53,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/uploads', uploadRoutes)
 app.use('/api/businesses', businessRoutes)
 app.use('/api/dashboard', dashboardRoutes)
+app.use('/api/admin', adminRoutes)
 app.use('/', siteRoutes)
 
 app.use(errorHandler)
