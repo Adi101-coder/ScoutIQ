@@ -116,7 +116,7 @@ router.post('/schedule-emails', async (req: Request, res: Response) => {
  * Uses cached emailLog.bodyHtml if available, otherwise generates via OpenAI.
  */
 router.get('/preview-email/:businessId', async (req: Request, res: Response) => {
-  const { businessId } = req.params
+  const businessId = req.params['businessId'] as string
 
   const business = await prisma.business.findUnique({
     where: { id: businessId },
