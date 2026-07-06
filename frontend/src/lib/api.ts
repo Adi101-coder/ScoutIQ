@@ -239,4 +239,9 @@ export const adminApi = {
     api
       .post<{ enqueued: number; total: number }>(`/api/admin/backfill-websites?threshold=${threshold}`)
       .then((r) => r.data),
+
+  previewEmail: (businessId: string) =>
+    api
+      .get<{ subject: string; html: string }>(`/api/admin/preview-email/${businessId}`)
+      .then((r) => r.data),
 }

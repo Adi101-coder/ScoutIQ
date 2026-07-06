@@ -14,7 +14,10 @@ interface TemplateOptions {
   businessName: string
   siteUrl: string
   content: EmailContent
+  /** CID attachment mode — used in real emails */
   qrEmbedded?: boolean
+  /** Public URL mode — used in preview (replaces cid:qr-code with actual img src) */
+  qrUrl?: string
 }
 
 type CategoryKey =
@@ -135,7 +138,7 @@ export function buildEmailHtml(
 ): string {
   const cat = resolveCategory(category)
   const cfg = CATEGORY_CONFIG[cat]
-  const { businessName, siteUrl, content, qrEmbedded } = opts
+  const { businessName, siteUrl, content, qrEmbedded, qrUrl } = opts
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -186,13 +189,13 @@ export function buildEmailHtml(
               </p>
 
               ${
-                qrEmbedded
+                (qrEmbedded || qrUrl)
                   ? `<!-- QR Code -->
               <table cellpadding="0" cellspacing="0" style="margin:0 auto 24px;text-align:center;width:100%;">
                 <tr>
                   <td align="center">
                     <p style="margin:0 0 10px;color:#64748b;font-size:13px;">📱 Scan to view your free preview</p>
-                    <img src="cid:qr-code" alt="Scan to preview your site" width="180" height="180"
+                    <img src="${qrUrl ?? 'cid:qr-code'}" alt="Scan to preview your site" width="180" height="180"
                          style="border:4px solid #f1f5f9;border-radius:8px;display:block;margin:0 auto;" />
                   </td>
                 </tr>

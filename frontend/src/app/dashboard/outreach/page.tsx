@@ -14,7 +14,83 @@ import {
   CalendarClock,
   AlertCircle,
   Loader2,
+  Eye,
+  X,
 } from 'lucide-react'
+
+// ─── Email Preview Modal ──────────────────────────────────────────────────────
+
+function PreviewModal({
+  businessId,
+  businessName,
+  onClose,
+}: {
+  businessId: string
+  businessName: string
+  onClose: () => void
+}) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['email-preview', businessId],
+    queryFn: () => adminApi.previewEmail(businessId),
+    staleTime: 5 * 60 * 1000,
+  })
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          <div>
+            <h2 className="font-semibold text-slate-800 text-base">Email Preview</h2>
+            <p className="text-xs text-slate-400 mt-0.5">{businessName}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Subject line */}
+        {data?.subject && (
+          <div className="px-5 py-3 bg-slate-50 border-b border-slate-100">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Subject: </span>
+            <span className="text-sm text-slate-700">{data.subject}</span>
+          </div>
+        )}
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-3">
+              <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+              <p className="text-sm text-slate-400">Generating preview with AI…</p>
+            </div>
+          ) : isError ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-3">
+              <AlertCircle className="w-6 h-6 text-red-400" />
+              <p className="text-sm text-red-500">Failed to generate preview. Try again.</p>
+            </div>
+          ) : (
+            <iframe
+              srcDoc={data?.html ?? ''}
+              title="Email Preview"
+              className="w-full h-full min-h-[500px] border-0"
+              sandbox="allow-same-origin"
+            />
+          )}
+        </div>
+
+        <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 text-xs text-slate-400 text-center">
+          This is a preview — the actual email may differ slightly after final AI personalisation.
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Badges ──────────────────────────────────────────────────────────────────
 
 function EmailStatusBadge({ status }: { status: string | null | undefined }) {
   if (!status) return <span className="text-xs text-slate-400">—</span>
@@ -38,6 +114,8 @@ function ScoreBadge({ score }: { score: number | undefined }) {
   return <span className={`text-sm font-semibold ${color}`}>{score}</span>
 }
 
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
 export default function OutreachPage() {
   const queryClient = useQueryClient()
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -45,6 +123,7 @@ export default function OutreachPage() {
   const [scheduledDate, setScheduledDate] = useState('')
   const [scheduledTime, setScheduledTime] = useState('09:00')
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null)
+  const [preview, setPreview] = useState<{ id: string; name: string } | null>(null)
 
   const { data: businesses = [], isLoading } = useQuery({
     queryKey: ['outreach-ready'],
@@ -97,6 +176,15 @@ export default function OutreachPage() {
         subtitle="Send personalised emails to businesses with generated website previews"
       />
 
+      {/* Preview Modal */}
+      {preview && (
+        <PreviewModal
+          businessId={preview.id}
+          businessName={preview.name}
+          onClose={() => setPreview(null)}
+        />
+      )}
+
       {/* Toast */}
       {toast && (
         <div
@@ -118,7 +206,6 @@ export default function OutreachPage() {
       {/* Controls */}
       <div className="bg-white rounded-xl border border-slate-200 p-5 mb-6">
         <div className="flex flex-wrap items-end gap-4">
-          {/* Schedule picker */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setScheduleMode('now')}
@@ -162,7 +249,6 @@ export default function OutreachPage() {
             </div>
           )}
 
-          {/* Send button */}
           <button
             onClick={() => sendEmails()}
             disabled={selected.size === 0 || isSending || (scheduleMode === 'later' && !scheduledDate)}
@@ -225,6 +311,7 @@ export default function OutreachPage() {
                 <th className="px-4 py-3 text-left font-semibold text-slate-600">Email</th>
                 <th className="px-4 py-3 text-center font-semibold text-slate-600">Email Status</th>
                 <th className="px-4 py-3 text-center font-semibold text-slate-600">Site</th>
+                <th className="px-4 py-3 text-center font-semibold text-slate-600">Preview</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -274,6 +361,19 @@ export default function OutreachPage() {
                         <AlertCircle className="w-3.5 h-3.5" /> No site
                       </span>
                     )}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setPreview({ id: biz.id, name: biz.name })
+                      }}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-slate-600 border border-slate-200 hover:bg-slate-100 hover:text-indigo-600 transition-colors"
+                      title="Preview email"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      Preview
+                    </button>
                   </td>
                 </tr>
               ))}

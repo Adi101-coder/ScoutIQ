@@ -3,6 +3,9 @@ import { prisma } from '../lib/prisma'
 import { requireAuth } from '../middleware/auth'
 import { enqueueWebsiteGen, enqueueEmailBulk } from '../queues/queues'
 import type { EmailJobData } from '../queues/queues'
+import { openai } from '../lib/openai'
+import { buildEmailHtml } from '../lib/emailTemplates'
+import type { EmailContent } from '../lib/emailTemplates'
 
 const router = Router()
 
@@ -105,6 +108,81 @@ router.post('/schedule-emails', async (req: Request, res: Response) => {
       ? `${jobs.length} email(s) scheduled for ${new Date(scheduledFor).toISOString()}`
       : `${jobs.length} email(s) queued for immediate delivery`,
   })
+})
+
+/**
+ * GET /api/admin/preview-email/:businessId
+ * Returns a preview of the outreach email HTML for a given business.
+ * Uses cached emailLog.bodyHtml if available, otherwise generates via OpenAI.
+ */
+router.get('/preview-email/:businessId', async (req: Request, res: Response) => {
+  const { businessId } = req.params
+
+  const business = await prisma.business.findUnique({
+    where: { id: businessId },
+    include: { presenceScore: true, websiteGen: true, emailLog: true },
+  })
+
+  if (!business) {
+    res.status(404).json({ error: 'Business not found' })
+    return
+  }
+
+  if (!business.websiteGen) {
+    res.status(400).json({ error: 'No generated website for this business' })
+    return
+  }
+
+  // If email was already sent, return the cached HTML
+  if (business.emailLog?.bodyHtml) {
+    res.json({ subject: business.emailLog.subject, html: business.emailLog.bodyHtml })
+    return
+  }
+
+  // Generate a fresh preview via OpenAI
+  const opportunities = business.presenceScore?.opportunities ?? []
+  const siteUrl = business.websiteGen.siteUrl
+  const qrUrl = business.websiteGen.qrUrl
+
+  let content: EmailContent
+  try {
+    const prompt = `Write a cold outreach email for a digital agency reaching out to a local business.
+Business Name: ${business.name}
+Category: ${business.category ?? 'Local Business'}
+Address: ${business.address ?? 'not provided'}
+Key weaknesses identified: ${opportunities.slice(0, 3).join('; ')}
+Free site preview URL: ${siteUrl}
+Return JSON: subject (string, <60 chars), bodyHtml (HTML <p> tags only, no CTA), ctaText (short string).`
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a professional copywriter. Return JSON with: subject, bodyHtml (HTML paragraphs only), ctaText.',
+        },
+        { role: 'user', content: prompt },
+      ],
+    })
+    content = JSON.parse(response.choices[0]?.message?.content ?? '{}') as EmailContent
+  } catch {
+    content = {
+      subject: `We built a free website preview for ${business.name}`,
+      bodyHtml: `<p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 16px;">Hi ${business.name} team,</p>
+<p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 16px;">We built a free website preview just for you — check it out and claim it at no cost.</p>`,
+      ctaText: 'View Your Free Site Preview',
+    }
+  }
+
+  const html = buildEmailHtml(business.category, {
+    businessName: business.name,
+    siteUrl,
+    content,
+    qrUrl,
+  })
+
+  res.json({ subject: content.subject, html })
 })
 
 export default router
