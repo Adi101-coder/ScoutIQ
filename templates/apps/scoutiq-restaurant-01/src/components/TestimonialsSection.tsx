@@ -2,81 +2,68 @@ import type { SiteContent } from '@scoutiq/site-shared'
 import type { SiteColors } from '@/lib/theme'
 import { AnimateIn } from './AnimateIn'
 
-const REVIEW_TEMPLATES = [
-  { rating: 5, prefix: 'Absolutely incredible' },
-  { rating: 5, prefix: 'A hidden gem' },
-  { rating: 5, prefix: 'Best dining experience' },
+interface TestimonialsProps {
+  content: SiteContent
+  colors: SiteColors
+}
+
+const TESTIMONIALS = [
+  {
+    name: 'Eleanor Whitmore',
+    role: 'Food Critic',
+    text: 'Every course arrived like a small ceremony. The tasting menu is easily among the finest I have had this year — restrained, confident, and deeply seasonal.',
+  },
+  {
+    name: 'Daniel Okafor',
+    role: 'Regular Guest',
+    text: 'We celebrated our anniversary here and the staff made the whole evening feel effortless. The wine pairings were inspired. We will be back.',
+  },
+  {
+    name: 'Sofia Marchetti',
+    role: 'Local Guide',
+    text: 'The room glows, the service is warm without hovering, and the handmade pasta is the best in the city. A neighbourhood treasure.',
+  },
 ]
 
-export function TestimonialsSection({ content, colors }: { content: SiteContent; colors: SiteColors }) {
-  const reviews = content.about.highlights.slice(0, 3).map((highlight, i) => ({
-    text: `${REVIEW_TEMPLATES[i]?.prefix ?? 'Wonderful'} — ${highlight.toLowerCase()} at ${content.businessName}.`,
-    author: ['Sarah M.', 'James K.', 'Elena R.'][i] ?? 'Guest',
-    rating: 5,
-  }))
-
-  if (reviews.length === 0) return null
-
+export function TestimonialsSection({ content, colors }: TestimonialsProps) {
   return (
-    <section className="py-24 md:py-32 px-6 relative overflow-hidden" style={{ background: colors.surface }}>
-      <div
-        className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-15"
-        style={{ background: colors.accent }}
-      />
-
-      <div className="max-w-7xl mx-auto relative">
+    <section className="py-24 md:py-28 px-6" style={{ background: colors.background }}>
+      <div className="max-w-6xl mx-auto">
         <AnimateIn>
           <div className="text-center mb-16">
-            <p
-              className="text-xs font-semibold uppercase tracking-[0.3em] mb-4"
-              style={{ color: colors.primary }}
-            >
-              Guest Reviews
+            <p className="text-[12px] font-medium uppercase tracking-[0.4em] mb-4" style={{ color: colors.primary }}>
+              Kind Words
             </p>
-            <h2
-              className="font-display text-4xl md:text-5xl font-bold"
-              style={{ color: colors.text }}
-            >
-              Loved by Our Guests
+            <h2 className="font-display text-4xl md:text-5xl font-medium mb-6" style={{ color: colors.dark }}>
+              What Our Guests Say
             </h2>
+            <div className="gold-rule mx-auto" />
           </div>
         </AnimateIn>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {reviews.map((review, i) => (
-            <AnimateIn key={review.author} delay={i * 120}>
+        <div className="grid md:grid-cols-3 gap-6">
+          {TESTIMONIALS.map((t, i) => (
+            <AnimateIn key={i} delay={i * 120}>
               <div
-                className="p-8 rounded-2xl h-full transition-all duration-500 hover:-translate-y-2 hover:shadow-card border"
-                style={{
-                  background: colors.background,
-                  borderColor: `${colors.primary}10`,
-                }}
+                className="p-9 h-full flex flex-col transition-transform duration-500 hover:-translate-y-2"
+                style={{ background: colors.dark }}
               >
-                <div className="flex gap-1 mb-5">
-                  {Array.from({ length: review.rating }).map((_, j) => (
-                    <span key={j} style={{ color: colors.accent }}>
-                      ★
-                    </span>
+                {/* Gold stars */}
+                <div className="flex gap-1.5 mb-6">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <span key={s} className="text-sm" style={{ color: colors.primary }}>★</span>
                   ))}
                 </div>
-                <p className="text-lg leading-relaxed mb-8 italic" style={{ color: colors.text }}>
-                  &ldquo;{review.text}&rdquo;
+
+                <p className="font-accent italic text-lg leading-relaxed text-white/85 flex-1 mb-8">
+                  &ldquo;{t.text}&rdquo;
                 </p>
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
-                    style={{ background: colors.primary, color: '#fff' }}
-                  >
-                    {review.author[0]}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm" style={{ color: colors.text }}>
-                      {review.author}
-                    </p>
-                    <p className="text-xs" style={{ color: colors.textMuted }}>
-                      Verified Guest
-                    </p>
-                  </div>
+
+                <div className="pt-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.12)' }}>
+                  <p className="font-display text-base font-medium text-white">{t.name}</p>
+                  <p className="text-[11px] uppercase tracking-[0.25em] mt-1" style={{ color: colors.primary }}>
+                    {t.role}
+                  </p>
                 </div>
               </div>
             </AnimateIn>

@@ -2,93 +2,85 @@ import type { SiteContent } from '@scoutiq/site-shared'
 import type { SiteColors } from '@/lib/theme'
 import { AnimateIn } from './AnimateIn'
 
-export function StorySection({ content, colors }: { content: SiteContent; colors: SiteColors }) {
-  return (
-    <section id="story" className="py-24 md:py-32 px-6" style={{ background: colors.surface }}>
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <AnimateIn>
-            <div className="relative">
-              <div
-                className="absolute -inset-4 rounded-3xl opacity-20 blur-2xl"
-                style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }}
-              />
-              <div
-                className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-lift"
-                style={{
-                  background: `linear-gradient(160deg, ${colors.secondary} 0%, ${colors.primary} 50%, ${colors.accent} 100%)`,
-                }}
-              >
-                <div className="absolute inset-0 hero-grain" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-10 text-center">
-                  <span className="text-8xl mb-6 animate-float">🍽️</span>
-                  <p className="font-accent text-3xl md:text-4xl italic text-white/90 leading-snug">
-                    &ldquo;Every plate tells a story&rdquo;
-                  </p>
-                  <p className="mt-6 text-sm uppercase tracking-[0.25em] text-white/60">
-                    — {content.businessName}
-                  </p>
-                </div>
-              </div>
-              <div
-                className="absolute -bottom-6 -right-6 md:right-8 px-8 py-6 rounded-2xl shadow-card"
-                style={{ background: colors.accent }}
-              >
-                <p className="font-display text-3xl font-bold" style={{ color: colors.primary }}>
-                  Est. 2024
-                </p>
-                <p className="text-xs uppercase tracking-widest mt-1" style={{ color: colors.secondary }}>
-                  Crafted with passion
-                </p>
-              </div>
-            </div>
-          </AnimateIn>
+interface StoryProps {
+  content: SiteContent
+  colors: SiteColors
+}
 
-          <AnimateIn delay={150}>
+const STORY_IMG =
+  'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1200&q=80'
+const STORY_IMG_SMALL =
+  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80'
+
+export function StorySection({ content, colors }: StoryProps) {
+  return (
+    <section id="story" className="py-24 md:py-32 px-6" style={{ background: colors.background }}>
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
+        {/* Framed photography — like the reference's bordered image */}
+        <AnimateIn>
+          <div className="relative">
+            {/* Gold frame offset behind */}
+            <div
+              className="absolute -top-4 -left-4 w-full h-full border"
+              style={{ borderColor: colors.primary }}
+            />
+            <div className="relative img-zoom shadow-card">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={STORY_IMG} alt="Dining room" className="w-full h-[460px] object-cover" />
+            </div>
+            {/* Small overlapping image */}
+            <div className="absolute -bottom-10 -right-6 md:-right-10 w-44 md:w-56 img-zoom shadow-lift border-8 border-white hidden sm:block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={STORY_IMG_SMALL} alt="Plated dish" className="w-full h-40 object-cover" />
+            </div>
+          </div>
+        </AnimateIn>
+
+        {/* Editorial copy */}
+        <AnimateIn delay={150}>
+          <div>
             <p
-              className="text-xs font-semibold uppercase tracking-[0.3em] mb-4"
+              className="text-[12px] font-medium uppercase tracking-[0.4em] mb-4"
               style={{ color: colors.primary }}
             >
               Our Story
             </p>
             <h2
-              className="font-display text-4xl md:text-5xl font-bold mb-8 leading-tight"
-              style={{ color: colors.text }}
+              className="font-display text-4xl md:text-5xl font-medium leading-[1.15] mb-6 text-balance"
+              style={{ color: colors.dark }}
             >
               {content.about.headline}
             </h2>
-            <p className="text-lg leading-relaxed mb-10" style={{ color: colors.textMuted }}>
+            <div className="gold-rule mb-8" />
+            <p className="leading-relaxed mb-6 font-light text-[15px]" style={{ color: colors.textMuted }}>
               {content.about.body}
             </p>
+            <p
+              className="font-accent italic text-lg mb-10"
+              style={{ color: colors.text }}
+            >
+              &ldquo;{content.description}&rdquo;
+            </p>
 
-            <div className="grid sm:grid-cols-2 gap-4 mb-10">
+            {/* Highlights as a refined two-column list */}
+            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-4 mb-10">
               {content.about.highlights.map((h, i) => (
-                <div
-                  key={h}
-                  className="flex items-start gap-3 p-4 rounded-xl transition-colors duration-300"
-                  style={{ background: `${colors.primary}08` }}
-                >
-                  <span
-                    className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                    style={{ background: colors.accent, color: colors.primary }}
-                  >
-                    {i + 1}
-                  </span>
-                  <span className="font-medium pt-1" style={{ color: colors.text }}>
-                    {h}
-                  </span>
+                <div key={i} className="flex items-start gap-3">
+                  <span className="mt-1 text-sm" style={{ color: colors.primary }}>✦</span>
+                  <span className="text-sm font-light" style={{ color: colors.text }}>{h}</span>
                 </div>
               ))}
             </div>
 
-            <blockquote
-              className="border-l-4 pl-6 italic text-lg"
-              style={{ borderColor: colors.accent, color: colors.text }}
+            <a
+              href="#menu"
+              className="inline-flex items-center gap-3 px-8 py-3.5 text-[13px] font-semibold uppercase tracking-[0.18em] border transition-all duration-300 hover:text-white"
+              style={{ borderColor: colors.primary, color: colors.primary }}
             >
-              {content.description}
-            </blockquote>
-          </AnimateIn>
-        </div>
+              Explore the Menu
+            </a>
+          </div>
+        </AnimateIn>
       </div>
     </section>
   )

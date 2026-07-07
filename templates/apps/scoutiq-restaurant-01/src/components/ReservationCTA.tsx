@@ -2,61 +2,61 @@ import type { SiteContent } from '@scoutiq/site-shared'
 import type { SiteColors } from '@/lib/theme'
 import { AnimateIn } from './AnimateIn'
 
-export function ReservationCTA({ content, colors }: { content: SiteContent; colors: SiteColors }) {
+interface ReservationProps {
+  content: SiteContent
+  colors: SiteColors
+}
+
+const CTA_IMG =
+  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2000&q=80'
+
+export function ReservationCTA({ content, colors }: ReservationProps) {
   const ctaHref =
     content.contact.whatsapp ??
     (content.contact.phone ? `tel:${content.contact.phone}` : '#contact')
 
   return (
-    <section className="py-20 px-6">
-      <div className="max-w-5xl mx-auto">
-        <AnimateIn>
-          <div
-            className="relative overflow-hidden rounded-3xl px-8 py-16 md:px-16 md:py-20 text-center shadow-lift"
-            style={{
-              background: `linear-gradient(135deg, ${colors.secondary} 0%, ${colors.primary} 50%, #ea580c 100%)`,
-            }}
-          >
-            <div className="absolute inset-0 hero-grain" />
-            <div
-              className="absolute inset-0 opacity-20 animate-gradient"
-              style={{
-                background: `linear-gradient(45deg, transparent, ${colors.accent}40, transparent)`,
-                backgroundSize: '200% 200%',
-              }}
-            />
-
-            <div className="relative z-10">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-200 mb-4">
-                Reserve Your Experience
-              </p>
-              <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-6 text-balance">
-                Ready for an Unforgettable Evening?
-              </h2>
-              <p className="text-white/80 text-lg max-w-xl mx-auto mb-10">
-                Join us at {content.businessName} for a dining experience crafted with care,
-                passion, and the finest ingredients.
-              </p>
-              <div className="flex flex-wrap gap-4 justify-center">
-                <a
-                  href={ctaHref}
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300 hover:scale-105 hover:shadow-glow"
-                  style={{ background: colors.accent, color: colors.primary }}
-                >
-                  Book a Table Now
-                  <span>→</span>
-                </a>
-                <a
-                  href="#contact"
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm border-2 border-white/40 text-white hover:bg-white/10 transition-all duration-300"
-                >
-                  View Hours & Location
-                </a>
-              </div>
-            </div>
-          </div>
-        </AnimateIn>
+    <section id="reserve" className="relative py-28 md:py-36 px-6 overflow-hidden">
+      {/* Dark photography backdrop */}
+      <div className="absolute inset-0">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={CTA_IMG} alt="Table setting" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0" style={{ background: 'rgba(27,26,23,0.82)' }} />
       </div>
+
+      <AnimateIn className="relative z-10 max-w-2xl mx-auto text-center">
+        <p className="text-[12px] font-medium uppercase tracking-[0.4em] mb-5" style={{ color: colors.primary }}>
+          Reservations
+        </p>
+        <h2 className="font-display text-4xl md:text-5xl font-medium text-white leading-[1.15] mb-6 text-balance">
+          Book Your Table Tonight
+        </h2>
+        <div className="flex justify-center mb-8">
+          <div className="gold-rule" />
+        </div>
+        <p className="font-accent italic text-lg text-white/75 mb-12 max-w-lg mx-auto">
+          {content.hero.subheadline}
+        </p>
+
+        <div className="flex flex-wrap justify-center gap-4">
+          <a
+            href={ctaHref}
+            className="inline-flex items-center gap-3 px-9 py-4 text-[13px] font-semibold uppercase tracking-[0.2em] text-white transition-all duration-300 hover:shadow-glow hover:-translate-y-0.5"
+            style={{ background: colors.primary }}
+          >
+            {content.hero.ctaText}
+          </a>
+          {content.contact.phone && (
+            <a
+              href={`tel:${content.contact.phone}`}
+              className="inline-flex items-center gap-3 px-9 py-4 text-[13px] font-semibold uppercase tracking-[0.2em] text-white border transition-all duration-300 hover:bg-white hover:text-black"
+              style={{ borderColor: 'rgba(255,255,255,0.5)' }}
+            >
+              {content.contact.phone}
+            </a>
+          )}
+        </div>
+      </AnimateIn>
     </section>
   )
 }

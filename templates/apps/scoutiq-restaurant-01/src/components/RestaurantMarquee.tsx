@@ -1,34 +1,41 @@
 import type { SiteContent } from '@scoutiq/site-shared'
 import type { SiteColors } from '@/lib/theme'
 
-export function RestaurantMarquee({ content, colors }: { content: SiteContent; colors: SiteColors }) {
-  const items = [
-    ...content.about.highlights,
-    content.tagline,
-    content.businessName,
-    'Farm to Table',
-    'Chef Crafted',
-    'Seasonal Menu',
+interface MarqueeProps {
+  content: SiteContent
+  colors: SiteColors
+}
+
+export function RestaurantMarquee({ content, colors }: MarqueeProps) {
+  const words = [
+    content.tagline || 'Fine Dining',
+    'Seasonal Ingredients',
+    'Handcrafted Dishes',
+    'Curated Wines',
+    'Warm Hospitality',
   ]
 
-  const doubled = [...items, ...items]
+  const row = words.map((w, i) => (
+    <span key={i} className="flex items-center gap-8 shrink-0">
+      <span
+        className="font-accent italic text-lg md:text-xl"
+        style={{ color: colors.textMuted }}
+      >
+        {w}
+      </span>
+      <span style={{ color: colors.primary }}>✦</span>
+    </span>
+  ))
 
   return (
-    <section
-      className="py-5 border-y overflow-hidden"
-      style={{ background: colors.primary, borderColor: `${colors.accent}30` }}
+    <div
+      className="py-6 overflow-hidden border-y"
+      style={{ background: colors.background, borderColor: colors.border }}
     >
-      <div className="flex animate-marquee whitespace-nowrap">
-        {doubled.map((item, i) => (
-          <span
-            key={`${item}-${i}`}
-            className="inline-flex items-center gap-6 px-8 text-sm font-semibold uppercase tracking-[0.2em] text-white/90"
-          >
-            <span>{item}</span>
-            <span style={{ color: colors.accent }}>✦</span>
-          </span>
-        ))}
+      <div className="flex gap-8 w-max animate-marquee">
+        <div className="flex gap-8 shrink-0">{row}</div>
+        <div className="flex gap-8 shrink-0" aria-hidden>{row}</div>
       </div>
-    </section>
+    </div>
   )
 }

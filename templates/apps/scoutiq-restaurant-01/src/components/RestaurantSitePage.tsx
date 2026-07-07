@@ -32,8 +32,8 @@ export async function RestaurantSitePage({ businessId }: Props) {
       <RestaurantNavbar content={content} colors={colors} />
       <RestaurantHero content={content} colors={colors} />
       <RestaurantMarquee content={content} colors={colors} />
-      <MenuShowcase content={content} colors={colors} />
       <StorySection content={content} colors={colors} />
+      <MenuShowcase content={content} colors={colors} />
       <GallerySection content={content} colors={colors} />
       <TestimonialsSection content={content} colors={colors} />
       <ReservationCTA content={content} colors={colors} />

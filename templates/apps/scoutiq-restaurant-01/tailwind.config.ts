@@ -9,13 +9,21 @@ const config: Config = {
     extend: {
       fontFamily: {
         display: ['"Playfair Display"', 'Georgia', 'serif'],
-        body: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        body: ['"Jost"', 'system-ui', 'sans-serif'],
         accent: ['"Cormorant Garamond"', 'Georgia', 'serif'],
       },
+      colors: {
+        ivory: '#FAF6EF',
+        gold: {
+          DEFAULT: '#C8A15A',
+          dark: '#A8833F',
+        },
+        ink: '#1B1A17',
+      },
       boxShadow: {
-        glow: '0 0 60px -12px rgba(251, 191, 36, 0.35)',
-        card: '0 24px 48px -12px rgba(28, 25, 23, 0.12)',
-        lift: '0 32px 64px -16px rgba(124, 45, 18, 0.2)',
+        card: '0 16px 40px -16px rgba(27, 26, 23, 0.12)',
+        lift: '0 28px 56px -20px rgba(27, 26, 23, 0.22)',
+        glow: '0 0 48px -12px rgba(200, 161, 90, 0.45)',
       },
     },
   },

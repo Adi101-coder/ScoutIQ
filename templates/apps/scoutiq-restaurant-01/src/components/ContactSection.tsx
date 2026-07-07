@@ -2,177 +2,140 @@ import type { SiteContent } from '@scoutiq/site-shared'
 import type { SiteColors } from '@/lib/theme'
 import { AnimateIn } from './AnimateIn'
 
-export function ContactSection({ content, colors }: { content: SiteContent; colors: SiteColors }) {
+interface ContactProps {
+  content: SiteContent
+  colors: SiteColors
+}
+
+export function ContactSection({ content, colors }: ContactProps) {
   const { contact, hours, social } = content
 
   const socialLinks = [
     { label: 'Instagram', url: social.instagram },
     { label: 'Facebook', url: social.facebook },
+    { label: 'YouTube', url: social.youtube },
+    { label: 'Twitter', url: social.twitter },
     { label: 'Yelp', url: social.yelp },
   ].filter((s) => s.url)
 
-  const openToday = hours.find((h) => {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    return h.day === days[new Date().getDay()]
-  })
-
   return (
-    <section id="contact" className="py-24 md:py-32 px-6" style={{ background: colors.background }}>
-      <div className="max-w-7xl mx-auto">
+    <section id="contact" className="py-24 md:py-32 px-6" style={{ background: colors.surface }}>
+      <div className="max-w-6xl mx-auto">
         <AnimateIn>
           <div className="text-center mb-16">
-            <p
-              className="text-xs font-semibold uppercase tracking-[0.3em] mb-4"
-              style={{ color: colors.primary }}
-            >
+            <p className="text-[12px] font-medium uppercase tracking-[0.4em] mb-4" style={{ color: colors.primary }}>
               Visit Us
             </p>
-            <h2
-              className="font-display text-4xl md:text-5xl font-bold"
-              style={{ color: colors.text }}
-            >
-              Get In Touch
+            <h2 className="font-display text-4xl md:text-5xl font-medium mb-6" style={{ color: colors.dark }}>
+              Find Your Way to Us
             </h2>
+            <div className="gold-rule mx-auto" />
           </div>
         </AnimateIn>
 
-        <div className="grid lg:grid-cols-5 gap-8">
-          <AnimateIn className="lg:col-span-2">
-            <div
-              className="p-8 md:p-10 rounded-3xl h-full shadow-card border"
-              style={{ background: colors.surface, borderColor: `${colors.primary}10` }}
-            >
-              <h3 className="font-display text-2xl font-bold mb-8" style={{ color: colors.text }}>
-                Contact Details
-              </h3>
-
-              <div className="space-y-7">
-                {contact.phone && (
-                  <div className="group">
-                    <p className="text-[10px] uppercase tracking-[0.25em] mb-2" style={{ color: colors.textMuted }}>
-                      Phone
-                    </p>
-                    <a
-                      href={`tel:${contact.phone}`}
-                      className="text-xl font-semibold transition-colors hover:opacity-80"
-                      style={{ color: colors.primary }}
-                    >
-                      {contact.phone}
-                    </a>
-                  </div>
-                )}
-                {contact.email && (
-                  <div>
-                    <p className="text-[10px] uppercase tracking-[0.25em] mb-2" style={{ color: colors.textMuted }}>
-                      Email
-                    </p>
-                    <a
-                      href={`mailto:${contact.email}`}
-                      className="text-lg font-medium"
-                      style={{ color: colors.primary }}
-                    >
-                      {contact.email}
-                    </a>
-                  </div>
-                )}
-                {contact.address && (
-                  <div>
-                    <p className="text-[10px] uppercase tracking-[0.25em] mb-2" style={{ color: colors.textMuted }}>
-                      Address
-                    </p>
-                    <p className="text-lg leading-relaxed" style={{ color: colors.text }}>
-                      {contact.address}
-                    </p>
-                  </div>
-                )}
+        <div className="grid md:grid-cols-3 gap-10 md:gap-6 mb-16 text-center">
+          {/* Address */}
+          {contact.address && (
+            <AnimateIn delay={0}>
+              <div className="px-4">
+                <p className="text-2xl mb-4" style={{ color: colors.primary }}>⚲</p>
+                <h3 className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-3" style={{ color: colors.dark }}>
+                  Address
+                </h3>
+                <p className="text-sm font-light leading-relaxed" style={{ color: colors.textMuted }}>
+                  {contact.address}
+                </p>
               </div>
+            </AnimateIn>
+          )}
 
+          {/* Contact */}
+          <AnimateIn delay={120}>
+            <div className="px-4">
+              <p className="text-2xl mb-4" style={{ color: colors.primary }}>✆</p>
+              <h3 className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-3" style={{ color: colors.dark }}>
+                Contact
+              </h3>
+              {contact.phone && (
+                <a href={`tel:${contact.phone}`} className="block text-sm font-light mb-1.5 transition-opacity hover:opacity-70" style={{ color: colors.textMuted }}>
+                  {contact.phone}
+                </a>
+              )}
+              {contact.email && (
+                <a href={`mailto:${contact.email}`} className="block text-sm font-light transition-opacity hover:opacity-70" style={{ color: colors.textMuted }}>
+                  {contact.email}
+                </a>
+              )}
+            </div>
+          </AnimateIn>
+
+          {/* Hours */}
+          {hours.length > 0 && (
+            <AnimateIn delay={240}>
+              <div className="px-4">
+                <p className="text-2xl mb-4" style={{ color: colors.primary }}>◷</p>
+                <h3 className="text-[12px] font-semibold uppercase tracking-[0.3em] mb-3" style={{ color: colors.dark }}>
+                  Opening Hours
+                </h3>
+                <dl className="space-y-1.5">
+                  {hours.map((h) => (
+                    <div key={h.day} className="text-sm font-light" style={{ color: colors.textMuted }}>
+                      <dt className="inline">{h.day}: </dt>
+                      <dd className="inline" style={{ color: colors.text }}>{h.hours}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </AnimateIn>
+          )}
+        </div>
+
+        {/* Socials + WhatsApp */}
+        {(socialLinks.length > 0 || contact.whatsapp) && (
+          <AnimateIn>
+            <div className="flex flex-wrap justify-center gap-3 mb-14">
               {contact.whatsapp && (
                 <a
                   href={contact.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 rounded-full font-semibold text-white text-sm transition-transform hover:scale-105"
+                  className="px-6 py-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-white transition-all hover:-translate-y-0.5"
                   style={{ background: '#25D366' }}
                 >
-                  Chat on WhatsApp
+                  WhatsApp
                 </a>
               )}
-
-              {socialLinks.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-8 pt-8 border-t" style={{ borderColor: `${colors.primary}15` }}>
-                  {socialLinks.map((s) => (
-                    <a
-                      key={s.label}
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 text-sm font-medium rounded-full border transition-all hover:scale-105"
-                      style={{ borderColor: colors.primary, color: colors.primary }}
-                    >
-                      {s.label}
-                    </a>
-                  ))}
-                </div>
-              )}
+              {socialLinks.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] border transition-all duration-300 hover:-translate-y-0.5"
+                  style={{ borderColor: colors.primary, color: colors.primary }}
+                >
+                  {s.label}
+                </a>
+              ))}
             </div>
           </AnimateIn>
+        )}
 
-          <AnimateIn delay={120} className="lg:col-span-3 space-y-6">
-            {openToday && (
-              <div
-                className="flex items-center gap-4 px-6 py-4 rounded-2xl"
-                style={{ background: `${colors.accent}30` }}
-              >
-                <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-                <p className="font-medium" style={{ color: colors.text }}>
-                  Today ({openToday.day}):{' '}
-                  <span style={{ color: colors.primary }}>{openToday.hours}</span>
-                </p>
-              </div>
-            )}
-
-            {hours.length > 0 && (
-              <div
-                className="p-8 md:p-10 rounded-3xl shadow-card border"
-                style={{ background: colors.surface, borderColor: `${colors.primary}10` }}
-              >
-                <h3 className="font-display text-2xl font-bold mb-6" style={{ color: colors.text }}>
-                  Opening Hours
-                </h3>
-                <dl className="space-y-3">
-                  {hours.map((h) => (
-                    <div
-                      key={h.day}
-                      className="flex justify-between items-center py-3 border-b last:border-0"
-                      style={{ borderColor: `${colors.primary}08` }}
-                    >
-                      <dt className="font-medium" style={{ color: colors.text }}>
-                        {h.day}
-                      </dt>
-                      <dd className="text-sm font-semibold" style={{ color: colors.primary }}>
-                        {h.hours}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            )}
-
-            {contact.mapEmbed && (
-              <div className="overflow-hidden rounded-3xl shadow-card border" style={{ borderColor: `${colors.primary}10` }}>
-                <iframe
-                  src={contact.mapEmbed}
-                  width="100%"
-                  height="280"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  title="Map"
-                />
-              </div>
-            )}
+        {/* Map */}
+        {contact.mapEmbed && (
+          <AnimateIn>
+            <div className="shadow-card border-8 border-white">
+              <iframe
+                src={contact.mapEmbed}
+                width="100%"
+                height="360"
+                style={{ border: 0, display: 'block', filter: 'grayscale(60%)' }}
+                loading="lazy"
+                title="Map"
+              />
+            </div>
           </AnimateIn>
-        </div>
+        )}
       </div>
     </section>
   )

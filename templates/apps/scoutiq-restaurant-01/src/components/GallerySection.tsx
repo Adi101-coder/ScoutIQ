@@ -2,67 +2,77 @@ import type { SiteContent } from '@scoutiq/site-shared'
 import type { SiteColors } from '@/lib/theme'
 import { AnimateIn } from './AnimateIn'
 
-const GALLERY_ITEMS = [
-  { emoji: '🥘', label: 'Main Course', span: 'md:col-span-2 md:row-span-2' },
-  { emoji: '🍷', label: 'Wine Selection', span: '' },
-  { emoji: '🥗', label: 'Fresh Starters', span: '' },
-  { emoji: '🍰', label: 'Desserts', span: 'md:col-span-2' },
-  { emoji: '☕', label: 'Coffee Bar', span: '' },
-  { emoji: '🌿', label: 'Garden Patio', span: '' },
+interface GalleryProps {
+  content: SiteContent
+  colors: SiteColors
+}
+
+const BANNER_IMG =
+  'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=2000&q=80'
+
+const GALLERY = [
+  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=800&q=80',
 ]
 
-export function GallerySection({ content, colors }: { content: SiteContent; colors: SiteColors }) {
+export function GallerySection({ content, colors }: GalleryProps) {
   return (
-    <section id="gallery" className="py-24 md:py-32 px-6" style={{ background: colors.background }}>
-      <div className="max-w-7xl mx-auto">
-        <AnimateIn>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
-            <div>
-              <p
-                className="text-xs font-semibold uppercase tracking-[0.3em] mb-4"
-                style={{ color: colors.primary }}
-              >
-                Atmosphere
-              </p>
-              <h2
-                className="font-display text-4xl md:text-5xl font-bold"
-                style={{ color: colors.text }}
-              >
-                A Feast for the Senses
-              </h2>
-            </div>
-            <p className="max-w-md text-lg" style={{ color: colors.textMuted }}>
-              Step inside {content.businessName} — where warm ambiance meets unforgettable flavors.
-            </p>
-          </div>
-        </AnimateIn>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[160px] md:auto-rows-[180px]">
-          {GALLERY_ITEMS.map((item, i) => (
-            <AnimateIn
-              key={item.label}
-              delay={i * 100}
-              className={`group relative overflow-hidden rounded-2xl ${item.span}`}
-            >
-              <div
-                className="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
-                style={{
-                  background: `linear-gradient(${135 + i * 30}deg, ${colors.secondary}ee, ${colors.primary}cc, ${colors.accent}88)`,
-                }}
-              />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-500" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-                <span className="text-5xl md:text-6xl mb-3 group-hover:scale-125 transition-transform duration-500">
-                  {item.emoji}
-                </span>
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/90">
-                  {item.label}
-                </span>
-              </div>
-            </AnimateIn>
-          ))}
+    <>
+      {/* ── Full-width photographic banner with centered text ─────────────── */}
+      <section className="relative py-32 md:py-44 px-6 overflow-hidden">
+        <div className="absolute inset-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={BANNER_IMG} alt="Restaurant ambience" className="w-full h-full object-cover" style={{ position: 'absolute', inset: 0 }} />
+          <div className="absolute inset-0" style={{ background: 'rgba(27,26,23,0.55)' }} />
         </div>
-      </div>
-    </section>
+        <AnimateIn className="relative z-10 text-center max-w-2xl mx-auto">
+          <p className="text-[12px] font-medium uppercase tracking-[0.4em] mb-5" style={{ color: colors.primary }}>
+            The Experience
+          </p>
+          <h2 className="font-display text-4xl md:text-5xl font-medium text-white leading-[1.15] mb-6 text-balance">
+            An Evening to Remember
+          </h2>
+          <p className="font-accent italic text-lg text-white/80">
+            {content.tagline}
+          </p>
+        </AnimateIn>
+      </section>
+
+      {/* ── Gallery grid ───────────────────────────────────────────────────── */}
+      <section id="gallery" className="py-24 md:py-28 px-6" style={{ background: colors.surface }}>
+        <div className="max-w-6xl mx-auto">
+          <AnimateIn>
+            <div className="text-center mb-16">
+              <p className="text-[12px] font-medium uppercase tracking-[0.4em] mb-4" style={{ color: colors.primary }}>
+                Moments
+              </p>
+              <h2 className="font-display text-4xl md:text-5xl font-medium mb-6" style={{ color: colors.dark }}>
+                From Our Gallery
+              </h2>
+              <div className="gold-rule mx-auto" />
+            </div>
+          </AnimateIn>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5">
+            {GALLERY.map((src, i) => (
+              <AnimateIn key={i} delay={i * 80}>
+                <div className={`img-zoom shadow-card ${i === 1 || i === 4 ? 'md:-translate-y-6' : ''}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt={`Gallery ${i + 1}`}
+                    className="w-full h-56 md:h-72 object-cover"
+                  />
+                </div>
+              </AnimateIn>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   )
 }

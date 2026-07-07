@@ -1,59 +1,59 @@
 import type { SiteContent } from '@scoutiq/site-shared'
 import type { SiteColors } from '@/lib/theme'
 
-export function RestaurantFooter({ content, colors }: { content: SiteContent; colors: SiteColors }) {
+interface FooterProps {
+  content: SiteContent
+  colors: SiteColors
+}
+
+export function RestaurantFooter({ content, colors }: FooterProps) {
   const year = new Date().getFullYear()
 
   return (
-    <footer
-      className="pt-16 pb-8 px-6"
-      style={{ background: colors.secondary }}
-    >
-      <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-3 gap-12 mb-12">
-          <div>
-            <p className="font-display text-2xl font-bold text-white mb-3">
-              {content.businessName}
-            </p>
-            <p className="text-white/60 leading-relaxed">{content.tagline}</p>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.25em] text-white/40 mb-4">Navigate</p>
-            <nav className="flex flex-col gap-2">
-              {[
-                { label: 'Menu', href: '#menu' },
-                { label: 'Our Story', href: '#story' },
-                { label: 'Gallery', href: '#gallery' },
-                { label: 'Contact', href: '#contact' },
-              ].map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="text-white/70 hover:text-white transition-colors text-sm"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.25em] text-white/40 mb-4">Contact</p>
-            {content.contact.address && (
-              <p className="text-white/60 text-sm leading-relaxed mb-2">{content.contact.address}</p>
-            )}
-            {content.contact.phone && (
-              <a href={`tel:${content.contact.phone}`} className="text-white/80 text-sm hover:text-white">
-                {content.contact.phone}
-              </a>
-            )}
+    <footer className="px-6 pt-20 pb-10" style={{ background: colors.dark }}>
+      <div className="max-w-6xl mx-auto">
+        {/* Brand mark centered like the reference */}
+        <div className="text-center mb-14">
+          <p className="font-display text-3xl font-medium text-white mb-3">
+            {content.businessName}
+          </p>
+          <p className="font-accent italic text-base" style={{ color: colors.primary }}>
+            {content.tagline}
+          </p>
+          <div className="flex justify-center mt-8">
+            <div className="gold-rule" />
           </div>
         </div>
 
-        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-white/40 text-sm">
-            © {year} {content.businessName}. All rights reserved.
+        {/* Quick links */}
+        <nav className="flex flex-wrap justify-center gap-x-10 gap-y-3 mb-14">
+          {[
+            { href: '#story', label: 'About' },
+            { href: '#dishes', label: 'Dishes' },
+            { href: '#menu', label: 'Menu' },
+            { href: '#gallery', label: 'Gallery' },
+            { href: '#contact', label: 'Contact' },
+          ].map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-[12px] font-medium uppercase tracking-[0.25em] text-white/60 transition-colors hover:text-white"
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* Bottom bar */}
+        <div
+          className="pt-8 flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-light border-t"
+          style={{ borderColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}
+        >
+          <p>© {year} {content.businessName}. All rights reserved.</p>
+          <p>
+            Preview powered by{' '}
+            <strong style={{ color: colors.primary }}>ScoutIQ</strong>
           </p>
-          <p className="text-white/30 text-xs">Preview site powered by ScoutIQ</p>
         </div>
       </div>
     </footer>

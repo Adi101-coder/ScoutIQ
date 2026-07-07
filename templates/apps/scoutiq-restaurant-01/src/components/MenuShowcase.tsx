@@ -2,102 +2,136 @@ import type { SiteContent } from '@scoutiq/site-shared'
 import type { SiteColors } from '@/lib/theme'
 import { AnimateIn } from './AnimateIn'
 
-const GRADIENTS = [
-  'from-amber-900/80 via-orange-800/60 to-amber-700/40',
-  'from-stone-800/80 via-amber-900/50 to-orange-900/40',
-  'from-orange-900/70 via-red-900/50 to-amber-800/40',
-  'from-yellow-900/60 via-amber-800/50 to-stone-900/40',
-  'from-red-900/70 via-orange-800/60 to-amber-900/40',
-  'from-stone-900/80 via-amber-950/60 to-orange-950/40',
+interface MenuProps {
+  content: SiteContent
+  colors: SiteColors
+}
+
+const DISH_IMAGES = [
+  'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=600&q=80',
 ]
 
-export function MenuShowcase({ content, colors }: { content: SiteContent; colors: SiteColors }) {
-  const featured = content.services.slice(0, 3)
-  const rest = content.services.slice(3)
+const MENU_PHOTO =
+  'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=80'
+
+const PRICES = ['24', '32', '18', '28', '21', '26']
+
+export function MenuShowcase({ content, colors }: MenuProps) {
+  const dishes = content.services.slice(0, 4)
+  const menuItems = content.services
 
   return (
-    <section id="menu" className="py-24 md:py-32 px-6" style={{ background: colors.background }}>
-      <div className="max-w-7xl mx-auto">
-        <AnimateIn>
-          <div className="text-center mb-16">
-            <p
-              className="text-xs font-semibold uppercase tracking-[0.3em] mb-4"
-              style={{ color: colors.primary }}
-            >
-              Culinary Excellence
-            </p>
-            <h2
-              className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance"
-              style={{ color: colors.text }}
-            >
-              Our Signature Menu
-            </h2>
-            <p className="max-w-2xl mx-auto text-lg leading-relaxed" style={{ color: colors.textMuted }}>
-              {content.description}
-            </p>
-          </div>
-        </AnimateIn>
+    <>
+      {/* ── Special Dishes: circular photo cards ─────────────────────────── */}
+      <section id="dishes" className="py-24 md:py-28 px-6" style={{ background: colors.surface }}>
+        <div className="max-w-6xl mx-auto">
+          <AnimateIn>
+            <div className="text-center mb-16">
+              <p className="text-[12px] font-medium uppercase tracking-[0.4em] mb-4" style={{ color: colors.primary }}>
+                Taste the Difference
+              </p>
+              <h2 className="font-display text-4xl md:text-5xl font-medium mb-6" style={{ color: colors.dark }}>
+                Our Special Dishes
+              </h2>
+              <div className="gold-rule mx-auto" />
+            </div>
+          </AnimateIn>
 
-        {/* Bento featured dishes */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 mb-12">
-          {featured.map((item, i) => (
-            <AnimateIn
-              key={item.title}
-              delay={i * 120}
-              className={`card-shine group relative overflow-hidden rounded-2xl min-h-[280px] flex flex-col justify-end p-8 transition-transform duration-500 hover:-translate-y-2 hover:shadow-lift ${
-                i === 0 ? 'md:col-span-7' : 'md:col-span-5'
-              }`}
-            >
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]}`}
-              />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
-              <div className="absolute top-6 right-6 text-5xl opacity-80 group-hover:scale-110 transition-transform duration-500">
-                {item.icon}
-              </div>
-              <div className="relative z-10">
-                <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-white/15 text-white/90 backdrop-blur-sm mb-4">
-                  Chef&apos;s Pick
-                </span>
-                <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-2">
-                  {item.title}
-                </h3>
-                <p className="text-white/75 text-sm leading-relaxed max-w-md">{item.description}</p>
-              </div>
-            </AnimateIn>
-          ))}
-        </div>
-
-        {/* Remaining items grid */}
-        {rest.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rest.map((item, i) => (
-              <AnimateIn key={item.title} delay={i * 80}>
-                <div
-                  className="card-shine group p-8 rounded-2xl border transition-all duration-500 hover:-translate-y-1 hover:shadow-card h-full"
-                  style={{
-                    background: colors.surface,
-                    borderColor: `${colors.primary}12`,
-                  }}
-                >
-                  <span className="text-4xl mb-5 block group-hover:scale-110 transition-transform duration-300">
-                    {item.icon}
-                  </span>
-                  <h3
-                    className="font-display text-xl font-bold mb-3"
-                    style={{ color: colors.primary }}
-                  >
-                    {item.title}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+            {dishes.map((dish, i) => (
+              <AnimateIn key={i} delay={i * 120}>
+                <div className="group text-center">
+                  {/* Circular image with gold ring on hover */}
+                  <div className="relative w-36 h-36 md:w-44 md:h-44 mx-auto mb-6">
+                    <div
+                      className="absolute inset-0 rounded-full border transition-all duration-500 scale-110 opacity-0 group-hover:opacity-100 group-hover:scale-100"
+                      style={{ borderColor: colors.primary }}
+                    />
+                    <div className="w-full h-full rounded-full overflow-hidden img-zoom shadow-card">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={DISH_IMAGES[i % DISH_IMAGES.length]}
+                        alt={dish.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <h3 className="font-display text-xl font-medium mb-2" style={{ color: colors.dark }}>
+                    {dish.title}
                   </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: colors.textMuted }}>
-                    {item.description}
+                  <p className="text-sm font-light leading-relaxed max-w-[220px] mx-auto" style={{ color: colors.textMuted }}>
+                    {dish.description}
                   </p>
                 </div>
               </AnimateIn>
             ))}
           </div>
-        )}
-      </div>
-    </section>
+        </div>
+      </section>
+
+      {/* ── Full Menu: editorial list with dot leaders + photography ─────── */}
+      <section id="menu" className="py-24 md:py-32 px-6" style={{ background: colors.background }}>
+        <div className="max-w-6xl mx-auto">
+          <AnimateIn>
+            <div className="text-center mb-16">
+              <p className="text-[12px] font-medium uppercase tracking-[0.4em] mb-4" style={{ color: colors.primary }}>
+                À La Carte
+              </p>
+              <h2 className="font-display text-4xl md:text-5xl font-medium mb-6" style={{ color: colors.dark }}>
+                From Our Kitchen
+              </h2>
+              <div className="gold-rule mx-auto" />
+            </div>
+          </AnimateIn>
+
+          <div className="grid lg:grid-cols-2 gap-14 items-center">
+            {/* Menu list */}
+            <AnimateIn>
+              <div className="space-y-8">
+                {menuItems.map((item, i) => (
+                  <div key={i} className="group">
+                    <div className="flex items-baseline">
+                      <h3
+                        className="font-display text-lg md:text-xl font-medium transition-colors group-hover:opacity-80"
+                        style={{ color: colors.dark }}
+                      >
+                        <span className="mr-2">{item.icon}</span>
+                        {item.title}
+                      </h3>
+                      <div className="dot-leader" />
+                      <span className="font-display text-lg font-medium" style={{ color: colors.primary }}>
+                        ${PRICES[i % PRICES.length]}
+                      </span>
+                    </div>
+                    <p className="text-sm font-light mt-1.5 max-w-md" style={{ color: colors.textMuted }}>
+                      {item.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </AnimateIn>
+
+            {/* Tall food photography with gold frame */}
+            <AnimateIn delay={200}>
+              <div className="relative hidden lg:block">
+                <div
+                  className="absolute -bottom-4 -right-4 w-full h-full border"
+                  style={{ borderColor: colors.primary }}
+                />
+                <div className="relative img-zoom shadow-lift">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={MENU_PHOTO} alt="Signature dish" className="w-full h-[560px] object-cover" />
+                </div>
+              </div>
+            </AnimateIn>
+          </div>
+        </div>
+      </section>
+    </>
   )
 }
