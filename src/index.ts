@@ -17,6 +17,7 @@ import adminRoutes from './routes/admin'
 import { errorHandler } from './middleware/errorHandler'
 import { startExpiryCleanup } from './jobs/expiryCleanup'
 import { startReminderJob } from './jobs/reminderEmails'
+import { stopBoss } from './lib/jobQueue'
 
 const app = express()
 
@@ -60,10 +61,26 @@ app.use(errorHandler)
 
 const PORT = parseInt(process.env.PORT ?? '4000')
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`The Human Collective API running on port ${PORT}`)
   startExpiryCleanup()
   startReminderJob()
 })
+
+// Release the pg-boss connection pool on shutdown/restart. Without this, every
+// nodemon restart or Render redeploy leaks session-mode connections against
+// Supabase's 15-client cap until they time out.
+let shuttingDown = false
+async function shutdown(signal: string): Promise<void> {
+  if (shuttingDown) return
+  shuttingDown = true
+  console.log(`[API] ${signal} received — shutting down gracefully...`)
+  server.close()
+  await stopBoss()
+  process.exit(0)
+}
+
+process.on('SIGTERM', () => void shutdown('SIGTERM'))
+process.on('SIGINT', () => void shutdown('SIGINT'))
 
 export default app

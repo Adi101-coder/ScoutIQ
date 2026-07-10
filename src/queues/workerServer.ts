@@ -6,9 +6,11 @@ import { stopBoss } from '../lib/jobQueue'
 
 // Render Web Service requires an open port — this satisfies that check
 // while the actual worker logic runs via registerWorkers().
-// Use a dedicated WORKER_PORT so it never collides with the API's PORT
-// when both run together (e.g. `npm run dev:full`).
-const PORT = parseInt(process.env.WORKER_PORT ?? '4001')
+// Locally, WORKER_PORT (4001) keeps this off the API's PORT (4000) when both
+// run together (e.g. `npm run dev:full`). On Render this is a separate service,
+// so when WORKER_PORT isn't set we bind the platform-provided PORT that Render
+// actually scans — otherwise the deploy fails with a port-scan timeout.
+const PORT = parseInt(process.env.WORKER_PORT ?? process.env.PORT ?? '4001')
 const server = http.createServer((_req, res) => {
   res.writeHead(200)
   res.end('workers ok')
@@ -22,12 +24,18 @@ registerWorkers().catch((err) => {
   process.exit(1)
 })
 
-process.on('SIGTERM', async () => {
-  console.log('[Workers] Shutting down gracefully...')
+let shuttingDown = false
+async function shutdown(signal: string): Promise<void> {
+  if (shuttingDown) return
+  shuttingDown = true
+  console.log(`[Workers] ${signal} received — shutting down gracefully...`)
   server.close()
   await stopBoss()
   process.exit(0)
-})
+}
+
+process.on('SIGTERM', () => void shutdown('SIGTERM'))
+process.on('SIGINT', () => void shutdown('SIGINT'))
 
 process.on('uncaughtException', (err) => {
   console.error('[Workers] Uncaught exception:', err)

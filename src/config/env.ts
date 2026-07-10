@@ -50,6 +50,19 @@ if (!parsed.success) {
   process.exit(1)
 }
 
+// In production these URLs get baked into artifacts (QR codes) and OAuth
+// callbacks. A localhost value silently ships broken links, so fail loudly.
+if (parsed.data.NODE_ENV === 'production') {
+  const localhostUrls = (['API_URL', 'FRONTEND_URL'] as const).filter((key) =>
+    /localhost|127\.0\.0\.1/.test(parsed.data[key])
+  )
+  if (localhostUrls.length > 0) {
+    console.error('[Config] These URLs must not point to localhost in production:')
+    localhostUrls.forEach((key) => console.error(`  - ${key}=${parsed.data[key]}`))
+    process.exit(1)
+  }
+}
+
 export const env = parsed.data
 
 export type Env = typeof env

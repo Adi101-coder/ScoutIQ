@@ -40,6 +40,11 @@ export async function getBoss(): Promise<PgBoss> {
     schema: 'pgboss',
     pollingIntervalSeconds: 2,
     application_name: 'scoutiq-jobs',
+    // Supabase's session-mode pooler caps total clients at 15. The API and the
+    // worker each run their own pg-boss instance (and local dev shares that same
+    // budget with the deployed services), so keep each pool small — otherwise
+    // they collectively exhaust the cap and pg-boss.start() throws EMAXCONNSESSION.
+    max: 3,
   })
 
   instance.on('error', (err) => {

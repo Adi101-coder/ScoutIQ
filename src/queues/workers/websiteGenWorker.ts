@@ -4,6 +4,7 @@ import { prisma } from '../../lib/prisma'
 import { supabase } from '../../lib/supabase'
 import { pickTemplate, generateSiteContent } from '../../services/websiteGeneratorService'
 import { getTemplateUrl } from '../../config/templates'
+import { env } from '../../config/env'
 import { enqueueEmail } from '../queues'
 import { isEmailEnabled } from '../../lib/email'
 import type { WebsiteGenJobData } from '../queues'
@@ -29,8 +30,11 @@ export async function processWebsiteGenJob(data: WebsiteGenJobData): Promise<voi
 
   const content = await generateSiteContent(business, business.presenceScore)
 
-  const apiUrl = process.env.API_URL ?? 'http://localhost:4000'
-  const trackingUrl = `${apiUrl}/s/${businessId}`
+  // QR encodes the API tracking URL (records the scan, sets crmStatus=INTERESTED,
+  // auto-extends the preview) which then 302-redirects to the Vercel site.
+  // This URL is baked into the PNG, so env.API_URL MUST be the public API host,
+  // never localhost — enforced in config/env.ts for production.
+  const trackingUrl = `${env.API_URL}/s/${businessId}`
 
   const qrBuffer = await QRCode.toBuffer(trackingUrl, {
     type: 'png',
