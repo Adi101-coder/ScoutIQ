@@ -2,7 +2,7 @@ import { prisma } from '../../lib/prisma'
 import { supabase } from '../../lib/supabase'
 import { openai } from '../../lib/openai'
 import { createTransporter, isEmailEnabled } from '../../lib/email'
-import { buildEmailHtml, type EmailContent } from '../../lib/emailTemplates'
+import { buildEmailHtml, REPLY_TO_EMAIL, type EmailContent } from '../../lib/emailTemplates'
 import type { EmailJobData } from '../queues'
 
 async function generateEmailContent(
@@ -116,7 +116,7 @@ export async function processEmailJob(data: EmailJobData): Promise<void> {
       qrEmbedded: !!qrBuffer,
     })
 
-    await transporter.sendMail({ from: fromAddress, to: recipient, subject, html, attachments })
+    await transporter.sendMail({ from: fromAddress, replyTo: REPLY_TO_EMAIL, to: recipient, subject, html, attachments })
 
     // Skip DB writes in test mode so we don't mark real businesses as emailed.
     if (!testEmailOverride) {
@@ -148,6 +148,7 @@ export async function processEmailJob(data: EmailJobData): Promise<void> {
 
   await transporter.sendMail({
     from: fromAddress,
+    replyTo: REPLY_TO_EMAIL,
     to: recipient,
     subject: content.subject,
     html,

@@ -20,6 +20,12 @@ interface TemplateOptions {
   qrUrl?: string
 }
 
+// Booking link for outreach — recipients can schedule a call with us.
+const CALENDLY_URL = 'https://calendly.com/rik-insurance-broker/30min'
+
+// Fallback contact — also set as the email Reply-To so replies reach Rik directly.
+export const REPLY_TO_EMAIL = 'rik.insurance.broker@gmail.com'
+
 type CategoryKey =
   | 'restaurant'
   | 'cafe'
@@ -183,7 +189,7 @@ export function buildEmailHtml(
               </p>
 
               <!-- CTA Button -->
-              <table cellpadding="0" cellspacing="0" style="margin:28px 0;">
+              <table cellpadding="0" cellspacing="0" style="margin:28px 0 16px;">
                 <tr>
                   <td style="border-radius:8px;background:${cfg.accent};">
                     <a href="${siteUrl}"
@@ -194,11 +200,31 @@ export function buildEmailHtml(
                 </tr>
               </table>
 
+              <!-- Secondary CTA: Schedule a meeting -->
+              <p style="margin:0 0 8px;color:#64748b;font-size:13px;">
+                Prefer to talk it through? Book a free 30-minute call:
+              </p>
+              <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+                <tr>
+                  <td style="border-radius:8px;border:2px solid ${cfg.accent};">
+                    <a href="${CALENDLY_URL}"
+                       style="display:inline-block;padding:12px 28px;color:${cfg.accent};font-size:14px;font-weight:600;text-decoration:none;border-radius:8px;">
+                      📅 Schedule a Meeting
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
               <p style="margin:0 0 8px;color:#64748b;font-size:13px;">
                 Or copy this link into your browser:
               </p>
-              <p style="margin:0 0 24px;font-size:12px;">
+              <p style="margin:0 0 16px;font-size:12px;">
                 <a href="${siteUrl}" style="color:${cfg.accent};word-break:break-all;">${siteUrl}</a>
+              </p>
+
+              <p style="margin:0 0 24px;color:#64748b;font-size:13px;line-height:1.6;">
+                Having trouble with the links above? Just reply to this email, or reach us directly at
+                <a href="mailto:${REPLY_TO_EMAIL}" style="color:${cfg.accent};">${REPLY_TO_EMAIL}</a>.
               </p>
 
               ${
