@@ -2,10 +2,16 @@ import cron from 'node-cron'
 import { prisma } from '../lib/prisma'
 import { supabase } from '../lib/supabase'
 import { tryAdvisoryLock, releaseAdvisoryLock } from '../lib/pgLock'
+import { isSiteExpiryEnabled } from '../config/env'
 
 const LOCK_ID = 83_927_401
 
 export async function runCleanup(): Promise<void> {
+  if (!isSiteExpiryEnabled()) {
+    console.log('[ExpiryCleanup] Site expiry disabled — skipping run')
+    return
+  }
+
   const lockAcquired = await tryAdvisoryLock(LOCK_ID)
 
   if (!lockAcquired) {
@@ -83,6 +89,11 @@ export async function runCleanup(): Promise<void> {
 }
 
 export function startExpiryCleanup(): void {
+  if (!isSiteExpiryEnabled()) {
+    console.log('[ExpiryCleanup] Site expiry disabled (SITE_EXPIRY_ENABLED=false) — cleanup not scheduled')
+    return
+  }
+
   cron.schedule('0 2 * * *', async () => {
     console.log('[ExpiryCleanup] Cron triggered at 2:00 AM')
     await runCleanup()

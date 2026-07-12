@@ -20,6 +20,9 @@ const envSchema = z.object({
   PORT: z.string().default('4000'),
   SCORE_THRESHOLD: z.string().default('50'),
   SITE_EXPIRY_DAYS: z.string().default('7'),
+  // When 'false', generated previews never expire: the cleanup + reminder crons
+  // don't run, so no site is ever marked EXPIRED. Flip back to 'true' to re-enable.
+  SITE_EXPIRY_ENABLED: z.enum(['true', 'false']).default('true'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   USE_LOCAL_TEMPLATES: z.enum(['true', 'false']).optional(),
 })
@@ -64,5 +67,7 @@ if (parsed.data.NODE_ENV === 'production') {
 }
 
 export const env = parsed.data
+
+export const isSiteExpiryEnabled = (): boolean => env.SITE_EXPIRY_ENABLED === 'true'
 
 export type Env = typeof env

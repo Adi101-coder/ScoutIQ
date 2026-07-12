@@ -1,4 +1,4 @@
-import { fetchSiteContent, ExpiredPage } from '@scoutiq/site-shared'
+import { fetchSiteContent, ExpiredPage, UnavailablePage } from '@scoutiq/site-shared'
 import { getGymColors } from '@/lib/theme'
 import { GymNavbar } from './GymNavbar'
 import { GymHero } from './GymHero'
@@ -15,12 +15,16 @@ interface Props {
 }
 
 export async function GymSitePage({ businessId }: Props) {
-  const content = await fetchSiteContent(businessId)
+  const result = await fetchSiteContent(businessId)
 
-  if (!content) {
+  if (result.status === 'unavailable') {
+    return <UnavailablePage />
+  }
+  if (result.status === 'expired') {
     return <ExpiredPage />
   }
 
+  const content = result.content
   const colors = getGymColors(content)
 
   return (

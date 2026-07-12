@@ -1,6 +1,7 @@
 export { SitePage } from './SitePage'
 export { fetchSiteContent } from './fetch'
-export { ExpiredPage, Nav, Footer } from './components/Footer'
+export type { SiteContentResult } from './fetch'
+export { ExpiredPage, UnavailablePage, Nav, Footer } from './components/Footer'
 export { Hero } from './components/Hero'
 export { Services } from './components/Services'
 export { About } from './components/About'

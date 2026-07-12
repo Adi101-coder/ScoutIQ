@@ -4,8 +4,13 @@ import { enqueueEmailBulk } from '../queues/queues'
 import type { EmailJobData } from '../queues/queues'
 import { addHours } from 'date-fns'
 import { isEmailEnabled } from '../lib/email'
+import { isSiteExpiryEnabled } from '../config/env'
 
 export async function runReminderEmails(): Promise<void> {
+  if (!isSiteExpiryEnabled()) {
+    console.log('[ReminderEmails] Site expiry disabled — skipping expiry reminders')
+    return
+  }
   if (!isEmailEnabled()) {
     console.log('[ReminderEmails] Email disabled — skipping')
     return
@@ -52,6 +57,10 @@ export async function runReminderEmails(): Promise<void> {
 }
 
 export function startReminderJob(): void {
+  if (!isSiteExpiryEnabled()) {
+    console.log('[ReminderEmails] Site expiry disabled (SITE_EXPIRY_ENABLED=false) — reminder cron not scheduled')
+    return
+  }
   if (!isEmailEnabled()) {
     console.log('[ReminderEmails] Email disabled — reminder cron not scheduled')
     return
