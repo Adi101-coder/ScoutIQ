@@ -64,7 +64,8 @@ Open 10 terminals, or use the port list above. Each app is independent.
 1. Push this repo to GitHub
 2. In Vercel: **Add New Project** → import repo
 3. Set **Root Directory** to e.g. `templates/apps/scoutiq-retail-01`
-4. Add env var: `NEXT_PUBLIC_API_URL=https://your-api.com`
+4. Add env var: `NEXT_PUBLIC_API_URL=https://scoutiq-api.onrender.com`  
+   (Must be the **API** host, not the template's `.vercel.app` URL. If unset, production builds fall back to this URL automatically after redeploy.)
 5. Deploy — repeat for each of the 10 apps (10 Vercel projects)
 
 Project names should match production URLs in `src/config/templates.ts`:
